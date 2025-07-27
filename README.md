@@ -210,17 +210,93 @@ curl http://localhost:3000/health
 ## 部署指南
 
 ### Docker部署
-```dockerfile
-FROM node:18-alpine
 
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
+#### 快速开始
 
-COPY . .
-EXPOSE 3000
+使用 Docker Compose（推荐）：
+```bash
+# 构建并启动容器
+docker-compose up -d
 
-CMD ["npm", "start"]
+# 查看运行状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
+```
+
+#### 手动 Docker 命令
+
+```bash
+# 1. 构建镜像
+docker build -t openai-proxy .
+
+# 2. 运行容器
+docker run -d \
+  --name openai-proxy \
+  -p 3000:3000 \
+  --restart unless-stopped \
+  openai-proxy
+
+# 3. 查看容器状态
+docker ps
+
+# 4. 查看日志
+docker logs -f openai-proxy
+
+# 5. 停止容器
+docker stop openai-proxy
+
+# 6. 删除容器
+docker rm openai-proxy
+```
+
+#### 环境变量配置
+
+如需自定义配置，可在 `docker-compose.yml` 中添加环境变量：
+
+```yaml
+environment:
+  - NODE_ENV=production
+  - PORT=3000
+  - UPSTREAM_API_URL=https://your-api.com/v1/chat/completions
+```
+
+或在 docker run 命令中添加：
+```bash
+docker run -d \
+  --name openai-proxy \
+  -p 3000:3000 \
+  -e NODE_ENV=production \
+  -e UPSTREAM_API_URL=https://your-api.com/v1/chat/completions \
+  openai-proxy
+```
+
+#### Docker 文件说明
+
+项目包含以下 Docker 配置文件：
+- `Dockerfile` - 容器构建配置
+- `docker-compose.yml` - 编排配置，包含健康检查
+- `.dockerignore` - 排除不必要的文件
+
+#### 优势
+- **环境隔离**: 解决 Node.js 版本兼容问题
+- **自动重启**: 容器异常退出自动重启
+- **易于部署**: 一键构建和部署
+- **后台运行**: 关闭 SSH 连接不影响服务运行
+
+#### 数据持久化
+
+如需持久化日志：
+```bash
+docker run -d \
+  --name openai-proxy \
+  -p 3000:3000 \
+  -v $(pwd)/logs:/app/logs \
+  openai-proxy
 ```
 
 ### Nginx反向代理
