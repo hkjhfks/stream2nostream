@@ -17,11 +17,11 @@ RUN chown -R nodejs:nodejs /app
 # 切换到非root用户
 USER nodejs
 
-# 复制package.json和package-lock.json（如果可用）
-COPY --chown=nodejs:nodejs package*.json ./
+# 复制package.json（没有package-lock.json）
+COPY --chown=nodejs:nodejs package.json ./
 
 # 安装依赖
-RUN npm ci --only=production && npm cache clean --force
+RUN npm install --only=production && npm cache clean --force
 
 # 复制应用代码
 COPY --chown=nodejs:nodejs . .
