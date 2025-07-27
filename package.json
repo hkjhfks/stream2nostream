@@ -1,0 +1,27 @@
+{
+  "name": "openai-proxy",
+  "version": "1.0.0",
+  "description": "High-performance OpenAI API proxy that converts non-streaming to streaming requests",
+  "main": "proxy-server.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "start": "node proxy-server.js",
+    "dev": "nodemon proxy-server.js",
+    "pm2": "pm2 start proxy-server.js --name openai-proxy --instances max",
+    "test": "node -c proxy-server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^6.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "optionalDependencies": {
+    "pm2": "^5.3.0"
+  }
+}
